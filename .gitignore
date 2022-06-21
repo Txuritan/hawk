@@ -1,0 +1,10 @@
+/assets/images
+/assets/video
+/node_modules
+/target
+
+/hawk.db*
+/hawk.exe*
+
+/cert.pem
+/key.pem

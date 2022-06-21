@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Hawk</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="bg-zinc-900 min-h-screen">
+    <form action="/login" method="post" class="m-2 text-zinc-50">
+        <label for="username" class="block m-2">Username: <input class="bg-zinc-800 border-0 rounded" type="text" name="username" id="username"></label>
+        <label for="password" class="block m-2">Password: &nbsp;<input class="bg-zinc-800 border-0 rounded" type="password" name="password" id="password"></label>
+        <input type="email" name="email" id="email" class="max-h-0 max-w-0 m-0 p-0 border-none">
+        <input type="submit" value="Login" class="cursor-pointer rounded bg-zinc-800 py-2 px-3 hover:bg-zinc-900" />
+    </form>
+</body>
+</html>

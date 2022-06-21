@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS videos (
+    id TEXT NOT NULL PRIMARY KEY,
+    ext TEXT NOT NULL,
+    created DATETIME DEFAULT (DATETIME('now'))
+);

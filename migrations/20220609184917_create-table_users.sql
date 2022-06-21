@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT NOT NULL PRIMARY KEY,
+    username TEXT NOT NULL,
+    hash TEXT NOT NULL,
+    created DATETIME DEFAULT (DATETIME('now'))
+);

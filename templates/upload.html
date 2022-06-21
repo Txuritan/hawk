@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload | Hawk</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="bg-zinc-900 min-h-screen">
+    <nav class="mx-4">
+        <a class="inline-block py-2 px-4 my-4 rounded text-zinc-100 hover:bg-zinc-800" href="/">Index</a>
+    </nav>
+
+    <p id="error" class="m-2 text-red-500"></p>
+    <div id="progress" class="m-2"></div>
+    <form id="upload" action="/upload" method="post" enctype="multipart/form-data" class="m-2 text-zinc-50">
+        <label for="file" class="block m-2">Select files: <input type="file" name="file" id="file" multiple="" /></label>
+        <input type="submit" value="Upload" class="cursor-pointer rounded bg-zinc-800 py-2 px-3 hover:bg-zinc-700 transition-colors onclick="upload(this)" />
+    </form>
+
+    <script src="/assets/axios.min.js"></script>
+    <script>
+        const error = document.getElementById("error");
+        const progress = document.getElementById("progress");
+        /** @type {HTMLFormElement} */
+        const upload = document.getElementById("upload");
+
+        function handleEvent(e) {
+            console.log(`${e.type}: ${e.loaded} bytes transferred`);
+        }
+
+        function submit(e) {
+            e.preventDefault();
+
+            var shouldBreak = false;
+
+            if (new FormData(upload).next().done) {
+                return;
+            }
+
+            for(const [key, value] of new FormData(upload).entries()) {
+                progress.insertAdjacentHTML("beforeend", `<div class="text-zinc-50 my-2">${value.name}: <div class="inline-block w-full bg-gray-200 h-1"><div class="bg-blue-600 h-1" id="${value.name}" style="width: 0%"></div></div></div>`);
+            }
+
+            for(const [key, value] of new FormData(upload).entries()) {
+                if (shouldBreak) {
+                    break;
+                }
+
+                const bar = document.getElementById(value.name);
+                const formData = new FormData();
+                formData.append(key, value);
+                axios({
+                    method: "POST",
+                    url: upload.getAttribute('action'),
+                    data: formData,
+                    onUploadProgress: function (ev) {
+                        console.log(ev);
+                        bar.style.width = `${(ev.loaded/ev.total)*100}%`;
+                    },
+                }).catch(function (err) {
+                    shouldBreak = true;
+                    error.innerText = JSON.stringify(err.toJSON());
+                });
+            }
+
+            progress.innerHTML = "";
+            upload.clear();
+        }
+
+        upload.addEventListener("submit", submit, true);
+    </script>
+</body>
+</html>

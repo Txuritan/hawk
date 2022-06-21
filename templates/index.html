@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hawk</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="bg-zinc-900 min-h-screen">
+    <nav class="mx-4">
+        <a class="inline-block py-2 px-4 my-4 rounded text-zinc-100 hover:bg-zinc-800" href="/login">Login</a>
+        <a class="inline-block py-2 px-4 my-4 rounded text-zinc-100 hover:bg-zinc-800" href="/upload">Upload</a>
+    </nav>
+
+    <div class="px-4 grid gap-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+        {% for video in videos %}
+        <a class="hover:brightness-75 transition duration-75" href="/video/{{ video }}" aria-label="Video with ID: {{ video }}"><div class="inline-block rounded bg-zinc-900 h-full w-full aspect-video object-contain bg-no-repeat bg-center" style="background-image: url(/assets/images/{{ video }}.webp)"></div></a>
+        {% endfor %}
+    </div>
+</body>
+</html>
