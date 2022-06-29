@@ -25,6 +25,8 @@
         const progress = document.getElementById("progress");
         /** @type {HTMLFormElement} */
         const upload = document.getElementById("upload");
+        /** @type {HTMLInputElement} */
+        const files = document.getElementById("file");
 
         function handleEvent(e) {
             console.log(`${e.type}: ${e.loaded} bytes transferred`);
@@ -35,7 +37,7 @@
 
             var shouldBreak = false;
 
-            if (new FormData(upload).next().done) {
+            if (files.value.length == 0) {
                 return;
             }
 

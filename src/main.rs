@@ -6,11 +6,12 @@ mod error;
 mod models;
 mod response;
 
-use std::net::SocketAddr;
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
 use axum::{Extension, Router};
 use axum_extra::routing::SpaRouter;
 use axum_server::{tls_rustls::RustlsConfig, Handle};
+use clap::Parser as _;
 use sqlx::SqlitePool;
 use tokio::{fs::File, io::AsyncWriteExt as _};
 use tower_cookies::CookieManagerLayer;
@@ -27,7 +28,21 @@ static STYLE_CSS: &str = include_str!("../assets/style.css");
 
 // convert images to webp: (for %i in (*.png) do ffmpeg -i %i %~ni.webp)
 
+#[derive(clap::Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// The host the server should bind to
+    #[clap(short, long, value_parser, default_value = "0.0.0.0")]
+    host: String,
+
+    /// The port the server should listen to
+    #[clap(short, long, value_parser, default_value_t = 25575)]
+    port: u16,
+}
+
 fn main() -> Result<(), Error> {
+    let args = Args::parse();
+
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
             std::env::var("RUST_LOG")
@@ -40,12 +55,12 @@ fn main() -> Result<(), Error> {
         .enable_all()
         .build()
         .expect("Failed to build Tokio runtime")
-        .block_on(entry())?;
+        .block_on(entry(args))?;
 
     Ok(())
 }
 
-async fn entry() -> Result<(), Error> {
+async fn entry(args: Args) -> Result<(), Error> {
     let db = std::env::current_dir()?.join("hawk.db");
     if !db.exists() {
         let mut db = File::create(&db).await?;
@@ -77,10 +92,9 @@ async fn entry() -> Result<(), Error> {
         .layer(CookieManagerLayer::new())
         .layer(CompressionLayer::new());
 
-    let addr = SocketAddr::from((
-        [0, 0, 0, 0],
-        if cfg!(debug_assertions) { 25573 } else { 25572 },
-    ));
+    let addr = args.host.parse::<Ipv4Addr>()?;
+
+    let addr = SocketAddr::from(SocketAddrV4::new(addr, args.port));
     tracing::info!("listening on {}", addr);
     axum_server::bind_rustls(addr, config)
         .handle(handle)

@@ -3,6 +3,8 @@ use http::StatusCode;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("address parse: {0}")]
+    AddrParse(#[from] std::net::AddrParseError),
     #[error("askama: {0}")]
     Askama(#[from] askama::Error),
     #[error("bcrypt: {0}")]
