@@ -101,7 +101,7 @@ async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Re
     let bytes = get_webp_frame(path, 16).await?;
 
     let img =
-        image::io::Reader::with_format(Cursor::new(bytes), image::ImageFormat::Png).decode()?;
+        image::io::Reader::with_format(Cursor::new(bytes), image::ImageFormat::WebP).decode()?;
     let img = img.thumbnail(1920 / 5, 1080 / 5);
 
     let path = std::env::current_dir()?
