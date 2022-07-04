@@ -25,6 +25,10 @@ pub enum Error {
     Sql(#[from] sqlx::Error),
     #[error("sqlx migration: {0}")]
     SqlMigrate(#[from] sqlx::migrate::MigrateError),
+    #[error("tokio join: {0}")]
+    TokioJoin(#[from] tokio::task::JoinError),
+    #[error("webp encoding: {0}")]
+    Webp(String),
 }
 
 impl IntoResponse for Error {

@@ -1,4 +1,9 @@
-use std::{io::Cursor, process::Stdio, sync::atomic::Ordering};
+use std::{
+    io::{Cursor, Write as _},
+    ops::DerefMut as _,
+    process::Stdio,
+    sync::atomic::Ordering,
+};
 
 use askama::Template;
 use axum::{extract::Multipart, http::StatusCode, response::Html, Extension};
@@ -109,13 +114,25 @@ async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Re
         .join("images")
         .join(format!("{}.webp", id));
 
-    img.save_with_format(path, image::ImageFormat::WebP)?;
+    tokio::task::spawn_blocking(move || -> Result<(), Error> {
+        let image = webp::Encoder::from_image(&img).map_err(|err| Error::Webp(err.to_string()))?;
+        let mut mem = image.encode(75.0);
+
+        let mut file = std::fs::File::create(&path)?;
+        file.write_all(mem.deref_mut())?;
+
+        Ok(())
+    })
+    .await??;
 
     Ok(())
 }
 
 #[tracing::instrument(skip(path, index), err)]
-async fn get_webp_frame<P: AsRef<std::path::Path>>(path: P, index: usize) -> Result<Vec<u8>, Error> {
+async fn get_webp_frame<P: AsRef<std::path::Path>>(
+    path: P,
+    index: usize,
+) -> Result<Vec<u8>, Error> {
     let child = Command::new("ffmpeg")
         .args([
             "-loglevel",
