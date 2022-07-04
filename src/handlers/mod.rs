@@ -11,6 +11,8 @@ pub fn routes() -> Router {
     Router::new()
         .route("/", get(index::get).post(index::get))
         .route("/admin", get(admin::get))
+        .route("/admin/clear", get(admin::clear_sessions))
+        .route("/admin/remove", get(admin::remove_video))
         .route("/assets/:name", get(assets::style_script_get))
         .route("/assets/images/:id", get(assets::images_get))
         .route("/login", get(login::get).post(login::post))
