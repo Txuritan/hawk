@@ -109,7 +109,7 @@ async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Re
         .join("images")
         .join(format!("{}.webp", id));
 
-    img.save_with_format(path, image::ImageFormat::Png)?;
+    img.save_with_format(path, image::ImageFormat::WebP)?;
 
     Ok(())
 }
