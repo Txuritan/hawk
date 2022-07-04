@@ -98,7 +98,7 @@ async fn get_type<P: AsRef<std::path::Path>>(path: P) -> Result<infer::Type, Err
 
 #[tracing::instrument(skip(path), fields(path = %path.as_ref().display()), err)]
 async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Result<(), Error> {
-    let bytes = get_png_frame(path, 16).await?;
+    let bytes = get_webp_frame(path, 16).await?;
 
     let img =
         image::io::Reader::with_format(Cursor::new(bytes), image::ImageFormat::Png).decode()?;
@@ -107,7 +107,7 @@ async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Re
     let path = std::env::current_dir()?
         .join("assets")
         .join("images")
-        .join(format!("{}.png", id));
+        .join(format!("{}.webp", id));
 
     img.save_with_format(path, image::ImageFormat::Png)?;
 
@@ -115,7 +115,7 @@ async fn generate_thumbnail<P: AsRef<std::path::Path>>(id: &Uuid, path: P) -> Re
 }
 
 #[tracing::instrument(skip(path, index), err)]
-async fn get_png_frame<P: AsRef<std::path::Path>>(path: P, index: usize) -> Result<Vec<u8>, Error> {
+async fn get_webp_frame<P: AsRef<std::path::Path>>(path: P, index: usize) -> Result<Vec<u8>, Error> {
     let child = Command::new("ffmpeg")
         .args([
             "-loglevel",
@@ -127,7 +127,7 @@ async fn get_png_frame<P: AsRef<std::path::Path>>(path: P, index: usize) -> Resu
             "-vframes",
             "1",
             "-c:v",
-            "png",
+            "webp",
             "-movflags",
             "empty_moov",
             "-f",
